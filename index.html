@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        /* 背景色设置为 transparent */
         .component-wrapper { width: 450px; height: 300px; position: relative; background: transparent; font-family: sans-serif; overflow: hidden; }
         .header { height: 30px; display: flex; justify-content: flex-end; align-items: center; padding-right: 15px; cursor: pointer; background: transparent; }
         .chart-main { height: 210px; display: flex; position: relative; }
-        /* 面板也设为透明或根据需求保留半透明 */
-        #batchPanel { position: absolute; top: 30px; left: 0; width: 450px; height: 270px; background: rgba(255, 255, 255, 0.9); z-index: 100; display: none; overflow-y: auto; padding: 10px; box-sizing: border-box; }
+        #batchPanel { position: absolute; top: 30px; left: 0; width: 450px; height: 270px; background: rgba(255, 255, 255, 0.95); z-index: 100; display: none; overflow-y: auto; padding: 10px; box-sizing: border-box; }
         .batch-row { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; font-size: 11px; }
         .batch-row input { width: 45px; }
         .batch-row input[id^="n"] { width: 60px; }
         .legend-area { height: 40px; display: flex; justify-content: center; align-items: center; gap: 20px; font-size: 12px; background: transparent; }
+        .legend-item { display: flex; align-items: center; gap: 5px; background: #e0e0e0; padding: 2px 8px; border-radius: 3px; }
     </style>
 </head>
 <body>
@@ -79,8 +78,8 @@
         const legA = document.getElementById('legA').value;
         const legB = document.getElementById('legB').value;
         document.getElementById('legendContainer').innerHTML = `
-            <div style="background:#e0e0e0; padding:2px 8px; border-radius:3px; font-size:12px;">${legA}</div>
-            <div style="background:#e0e0e0; padding:2px 8px; border-radius:3px; font-size:12px;">${legB}</div>
+            <div class="legend-item"><span style="color:#4facfe">■</span> ${legA}</div>
+            <div class="legend-item"><span style="color:#6a11cb">■</span> ${legB}</div>
         `;
     }
 
