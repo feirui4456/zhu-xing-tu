@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .component-wrapper { width: 450px; height: 300px; border: 1px solid rgba(200, 200, 200, 0.5); position: relative; background: transparent; font-family: sans-serif; overflow: hidden; }
+        .header { height: 30px; display: flex; justify-content: flex-end; align-items: center; padding-right: 15px; background: rgba(248, 248, 248, 0.8); cursor: pointer; border-bottom: 1px solid rgba(221, 221, 221, 0.5); }
+        .chart-main { height: 210px; display: flex; position: relative; }
+        #batchPanel { position: absolute; top: 30px; left: 0; width: 450px; height: 270px; background: rgba(255, 255, 255, 0.95); z-index: 100; display: none; overflow-y: auto; padding: 10px; box-sizing: border-box; border: 1px solid #999; }
+        .batch-row { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; font-size: 11px; border-bottom: 1px solid #eee; }
+        .batch-row input { width: 45px; }
+        .batch-row input[id^="n"] { width: 60px; }
+        .legend-area { height: 40px; display: flex; justify-content: center; align-items: center; gap: 20px; font-size: 12px; border-top: 1px solid rgba(238, 238, 238, 0.5); }
+    </style>
+</head>
+<body>
+
+<div class="component-wrapper">
+    <div class="header" onclick="document.getElementById('batchPanel').style.display='block'">⚙️</div>
+    
+    <div id="batchPanel">
+        <div style="font-weight:bold; margin-bottom:5px;">
+            系列A:<input type="text" id="legA" value="指标 A" style="width:50px"> 
+            系列B:<input type="text" id="legB" value="指标 B" style="width:50px">
+            <button onclick="saveBatch()">保存</button>
+        </div>
+        <div id="batchFields"></div>
+    </div>
+
+    <div class="chart-main">
+        <canvas id="mainChartCanvas" width="450" height="210"></canvas>
+    </div>
+
+    <div class="legend-area">
+        <div id="labelA"><span style="color:#4facfe">■</span> 指标 A</div>
+        <div id="labelB"><span style="color:#6a11cb">■</span> 指标 B</div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('mainChartCanvas');
+    const ctx = canvas.getContext('2d');
+    const BASE_Y = 180;
+    let data = Array.from({length: 21}, (_, i) => ({name: "组"+(i+1), valA: 60, valB: 100}));
+    let offset = 0;
+    let isPaused = false;
+
+    function initBatch() {
+        document.getElementById('batchFields').innerHTML = data.map((d, i) => `
+            <div class="batch-row">
+                名称:<input value="${d.name}" id="n${i}">
+                A:<input type="number" value="${d.valA}" id="a${i}">
+                B:<input type="number" value="${d.valB}" id="b${i}">
+            </div>
+        `).join('');
+    }
+
+    function saveBatch() {
+        document.getElementById('labelA').innerHTML = `<span style="color:#4facfe">■</span> ${document.getElementById('legA').value}`;
+        document.getElementById('labelB').innerHTML = `<span style="color:#6a11cb">■</span> ${document.getElementById('legB').value}`;
+        for(let i=0; i<data.length; i++) {
+            data[i] = {
+                name: document.getElementById('n'+i).value,
+                valA: parseFloat(document.getElementById('a'+i).value),
+                valB: parseFloat(document.getElementById('b'+i).value)
+            };
+        }
+        document.getElementById('batchPanel').style.display = 'none';
+    }
+
+    canvas.addEventListener('mouseenter', () => isPaused = true);
+    canvas.addEventListener('mouseleave', () => { isPaused = false; requestAnimationFrame(animate); });
+
+    function animate() {
+        if (isPaused) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        offset -= 0.8;
+        if (Math.abs(offset) >= 21 * 70) offset = 0;
+
+        ctx.fillStyle = "#666";
+        for(let i=0; i<=3; i++) ctx.fillText((i*50), 5, BASE_Y - i*50);
+
+        for (let i = 0; i < 44; i++) {
+            const idx = i % 21;
+            const x = 40 + i * 70 + offset;
+            
+            let gradA = ctx.createLinearGradient(0, BASE_Y, 0, BASE_Y - data[idx].valA);
+            gradA.addColorStop(0, '#4facfe'); gradA.addColorStop(1, '#00f2fe');
+            ctx.fillStyle = gradA;
+            ctx.fillRect(x, BASE_Y - data[idx].valA, 20, data[idx].valA);
+            
+            ctx.shadowBlur = 8; ctx.shadowColor = "#fff";
+            ctx.fillStyle = "rgba(255,255,255,0.6)";
+            ctx.fillRect(x, (BASE_Y - data[idx].valA) + (Math.abs(offset*2) % data[idx].valA), 20, 3);
+            ctx.shadowBlur = 0;
+
+            let gradB = ctx.createLinearGradient(0, BASE_Y, 0, BASE_Y - data[idx].valB);
+            gradB.addColorStop(0, '#6a11cb'); gradB.addColorStop(1, '#2575fc');
+            ctx.fillStyle = gradB;
+            ctx.fillRect(x + 25, BASE_Y - data[idx].valB, 20, data[idx].valB);
+            
+            ctx.shadowBlur = 8; ctx.shadowColor = "#fff";
+            ctx.fillStyle = "rgba(255,255,255,0.6)";
+            ctx.fillRect(x + 25, (BASE_Y - data[idx].valB) + (Math.abs(offset*2) % data[idx].valB), 20, 3);
+            ctx.shadowBlur = 0;
+
+            ctx.fillStyle = "#333";
+            ctx.fillText(data[idx].valA, x + 2, BASE_Y - data[idx].valA - 5);
+            ctx.fillText(data[idx].valB, x + 27, BASE_Y - data[idx].valB - 5);
+            ctx.fillText(data[idx].name, x + 8, BASE_Y + 20);
+        }
+        requestAnimationFrame(animate);
+    }
+
+    initBatch();
+    animate();
+</script>
+</body>
+</html>
