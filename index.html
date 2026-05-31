@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        .component-wrapper { width: 450px; height: 300px; position: relative; background: #fff; font-family: sans-serif; overflow: hidden; }
-        .header { height: 30px; display: flex; justify-content: flex-end; align-items: center; padding-right: 15px; cursor: pointer; }
+        /* 背景色设置为 transparent */
+        .component-wrapper { width: 450px; height: 300px; position: relative; background: transparent; font-family: sans-serif; overflow: hidden; }
+        .header { height: 30px; display: flex; justify-content: flex-end; align-items: center; padding-right: 15px; cursor: pointer; background: transparent; }
         .chart-main { height: 210px; display: flex; position: relative; }
-        #batchPanel { position: absolute; top: 30px; left: 0; width: 450px; height: 270px; background: #fff; z-index: 100; display: none; overflow-y: auto; padding: 10px; box-sizing: border-box; }
+        /* 面板也设为透明或根据需求保留半透明 */
+        #batchPanel { position: absolute; top: 30px; left: 0; width: 450px; height: 270px; background: rgba(255, 255, 255, 0.9); z-index: 100; display: none; overflow-y: auto; padding: 10px; box-sizing: border-box; }
         .batch-row { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; font-size: 11px; }
         .batch-row input { width: 45px; }
         .batch-row input[id^="n"] { width: 60px; }
-        .legend-area { height: 40px; display: flex; justify-content: center; align-items: center; gap: 20px; font-size: 12px; }
+        .legend-area { height: 40px; display: flex; justify-content: center; align-items: center; gap: 20px; font-size: 12px; background: transparent; }
     </style>
 </head>
 <body>
@@ -35,7 +37,6 @@
 </div>
 
 <script>
-    /** ================= 数据配置区 ================= **/
     const initialData = [
         { name: "组1", valA: 60, valB: 100 }, { name: "组2", valA: 70, valB: 100 },
         { name: "组3", valA: 30, valB: 50 }, { name: "组4", valA: 41, valB: 80 },
@@ -49,7 +50,6 @@
         { name: "组19", valA: 70, valB: 90 }, { name: "组20", valA: 40, valB: 50 },
         { name: "组21", valA: 60, valB: 100 }
     ];
-    /** =========================================== **/
 
     const canvas = document.getElementById('mainChartCanvas');
     const ctx = canvas.getContext('2d');
